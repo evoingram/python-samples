@@ -1,0 +1,38 @@
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  validate mobile phone number
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+import re 
+
+iPhoneNumberCount = int(input())
+iResultList = []
+for x in range(0, iPhoneNumberCount):
+    iCurrentPhoneNumber = str(input())
+    iCurrentInputLength = len(iCurrentPhoneNumber)
+    sFirstLetter = iCurrentPhoneNumber[:1]
+    bLetterCheck = re.search('[a-zA-Z]', iCurrentPhoneNumber)
+    if bLetterCheck == None:
+        if iCurrentInputLength == 10: 
+            if sFirstLetter == "7":
+                iResult = "YES"
+                iResultList.append(iResult)
+            elif sFirstLetter == "8":
+                iResult = "YES"
+                iResultList.append(iResult)
+            elif sFirstLetter == "9":
+                iResult = "YES"
+                iResultList.append(iResult)
+            else:
+                iResult = "NO"
+                iResultList.append(iResult)
+        else:
+            iResult = "NO"
+            iResultList.append(iResult)
+    else:
+        iResult = "NO"
+        iResultList.append(iResult)
+for y in range(0, iPhoneNumberCount):
+    iResultFinal = iResultList[y]
+    print(iResultFinal)
