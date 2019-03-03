@@ -1,0 +1,22 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  parses e-mail addresses.
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+import re 
+iNumberofEmails = int(input())
+lEmailList = []
+lCurrentList = []
+for x in range(0, iNumberofEmails):
+    sCurrentName, sCurrentEmail = input().split()
+    sCurrentName = sCurrentName.strip()
+    sCurrentEmail = sCurrentEmail.strip()
+    lCurrentList = [sCurrentName, sCurrentEmail]
+    lEmailList.append(lCurrentList)
+    
+for y in range(0, len(lEmailList)):
+    sName = lEmailList[y][0]
+    sEmail = lEmailList[y][1]
+    bMatch = re.match(r'<[A-Za-z](\w|-|\.|_)+@[A-Za-z]+\.[A-Za-z]{1,3}>', sEmail)
+    if bMatch:
+        print(sName, sEmail)
