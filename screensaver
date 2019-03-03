@@ -1,0 +1,106 @@
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  Bounces AQC logo around the screen
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+import pygame
+
+tNavy  = (  0,  34,  68)
+tGreen = (105, 190,  40)
+tGray  = (162, 172, 175)
+
+pygame.init()
+
+# screen height and width 
+lSize = [1220, 540]
+dsmScreen = pygame.display.set_mode(lSize)
+sProgramTitle = '"Put some English on it," Peggy Hill.'
+pygame.display.set_caption(sProgramTitle)
+
+#Loop until close button clicked
+bDone = False
+
+# how fast the screen updates
+tcClock = pygame.time.Clock()
+
+# bouncing image starts here
+iStartPosX = 50
+iStartPosY = 50
+
+
+# bouncing unit speed and direction
+iChangeX = 5
+iChangeY = 5
+
+
+while bDone == False:
+    for gotevent in pygame.event.get():
+        if gotevent.type == pygame.QUIT:
+            bDone = True 
+    
+    # background color
+    dsmScreen.fill(tNavy)
+    
+    # background image settings
+    imgPosition = [0, 0]
+    imgBackgroundPath = "C:/cover-photo.jpg"
+    imgBackground = pygame.image.load(imgBackgroundPath).convert()
+    imgBackground = pygame.transform.scale(imgBackground, (1220, 540)) 
+    dsmScreen.blit(imgBackground, imgPosition)
+            
+    # bouncing positions
+    iGrayRectPosX = iStartPosX - 200
+    iGrayRectPosY = iStartPosY - 90
+    
+    iImagePosX = iStartPosX - 160
+    iImagePosY = iStartPosY - 80
+    
+    iTextRectPosX = iStartPosX - 160
+    iTextRectPosY = iStartPosY + 70
+    
+    iMotto1PosX = iStartPosX - 130
+    iMotto1PosY = iStartPosY + 80
+    iMotto2PosX = iStartPosX - 130
+    iMotto2PosY = iStartPosY + 90    
+        
+    # bouncing image settings
+    sImagePath = "C:/LOGO-5inch-by-1.22inches.gif"
+    imgCompanyLogo = pygame.image.load(sImagePath).convert()
+    imgCompanyLogo = pygame.transform.scale(imgCompanyLogo, (500, 122))    
+    pygame.draw.rect(dsmScreen, tGray, [iGrayRectPosX, iGrayRectPosY, 600, 150])
+    dsmScreen.blit(imgCompanyLogo, [iImagePosX, iImagePosY, 500, 122])
+    
+    
+    # motto settings
+    pygame.draw.rect(dsmScreen, tNavy, [iTextRectPosX, iTextRectPosY, 500, 40])
+        
+    sFontSettings = pygame.font.Font(None, 20)
+    
+    sActualPhrase1 = 'A Quo Co. provides EXPERTISE AND EXPERIENCE you can rely upon'
+    sActualPhrase2 = 'and the PERSONAL SERVICE of a small business.'
+    
+    sMotto1 = sFontSettings.render(sActualPhrase1, True, tGray)
+    sMotto2 = sFontSettings.render(sActualPhrase2, True, tGreen)
+    
+    dsmScreen.blit(sMotto1, (iMotto1PosX, iMotto1PosY))
+    dsmScreen.blit(sMotto2, (iMotto2PosX, iMotto2PosY))
+    iStartPosX += iChangeX
+    iStartPosY += iChangeY
+    
+    
+    # bounce  settings
+    if iStartPosY > 950 or iStartPosY < 0:
+        iChangeY = iChangeY * -1
+    if iStartPosX > 1150 or iStartPosX < 0:
+        iChangeX = iChangeX * -1
+    
+    
+    # frames per second
+    tcClock.tick(20)
+    
+    # update screen
+    pygame.display.flip()
+
+pygame.quit()
