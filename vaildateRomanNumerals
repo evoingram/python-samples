@@ -1,0 +1,21 @@
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  validates Roman numerals
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+regex_pattern = r""	# Do not delete 'r'.
+import re 
+iRThousand = "M{0,3}"
+iRHundred = "(C[MD]|D?C{0,3})"
+iRTen = "(X[CL]|L?X{0,3})"
+iRSingle = "(I[VX]|V?I{0,3})"
+
+iResult = bool(re.match(iRThousand + iRHundred + iRTen + iRSingle +'$', input()))
+
+print(iResult)
+
+
+import re
+print(str(bool(re.match(regex_pattern, input()))))
