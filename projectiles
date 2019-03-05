@@ -1,0 +1,173 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+Name:         Projectiles
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  Character Animation and Projectiles
+Link:         https://www.youtube.com/watch?v=xfnRywBv5VM&list=PLzMcBGfZo4-lp3jAExUCewBfMx3UZFkh5&index=4
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+import pygame
+
+pygame.init()
+
+pgWindow = pygame.display.set_mode((500, 480))
+
+sTitle = "Projectiles Demo by Erica L. Ingram"
+pygame.display.set_caption(sTitle)
+
+# pygame.image.load(pygame.path.join('R1.png'))
+
+lWalkRightImages = [pygame.image.load('R1.png'), \
+                    pygame.image.load('R2.png'), \
+                    pygame.image.load('R3.png'), \
+                    pygame.image.load('R4.png'), \
+                    pygame.image.load('R5.png'), \
+                    pygame.image.load('R6.png'), \
+                    pygame.image.load('R7.png'), \
+                    pygame.image.load('R8.png'), \
+                    pygame.image.load('R9.png')]
+
+lWalkLeftImages = [pygame.image.load('L1.png'), \
+                   pygame.image.load('L2.png'), \
+                   pygame.image.load('L3.png'), \
+                   pygame.image.load('L4.png'), \
+                   pygame.image.load('L5.png'), \
+                   pygame.image.load('L6.png'), \
+                   pygame.image.load('L7.png'), \
+                   pygame.image.load('L8.png'), \
+                   pygame.image.load('L9.png')]
+
+imgBackGround = pygame.image.load('bg.jpg')
+
+imgCharStanding = pygame.image.load('standing.png') 
+
+
+tcClock = pygame.time.Clock()
+
+class player(object):
+    def __init__(self, iLocationX, iLocationY, iWidth, iHeight):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iWidth = iWidth
+        self.iHeight = iHeight
+        self.iVelocity = 5
+        self.tNavy  = (  0,  34,  68)
+        self.tGreen = (105, 190,  40)
+        self.tGray =  (162, 172, 175)
+        self.iScreenWidth = 500
+        self.bIsJumping = False
+        self.iJumpCount = 10
+        self.bLeft = False 
+        self.bRight = False
+        self.iWalkCount = 0 
+        self.bStanding = True 
+        # lRectDimensions = (iLocationX, iLocationY, iWidth, iHeight)
+        
+    def draw(self, pgWindow):
+        if self.iWalkCount +1 >= 27:
+            self.iWalkCount = 0
+        if not(self.bStanding):
+            if self.bLeft:
+                pgWindow.blit(lWalkLeftImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+            elif self.bRight:
+                pgWindow.blit(lWalkRightImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+                self.iWalkCount += 1
+        else:
+            if self.bRight:
+                pgWindow.blit(lWalkRightImages[0], (self.iLocationX, self.iLocationY))
+            else:
+                pgWindow.blit(lWalkLeftImages[0], (self.iLocationX, self.iLocationY))
+                    
+                # pgWindow.blit(imgCharStanding, (self.iLocationX, self.iLocationY))    
+
+
+class projectile(object):
+    def __init__(self, iLocationX, iLocationY, iRadius, sColor, iFacing):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iRadius = iRadius
+        self.sColor = sColor
+        self.iFacing = iFacing
+        self.iVelocity = 8 * iFacing
+        
+    def draw1(self, pgWindow):
+        pygame.draw.circle(pgWindow, self.sColor, (self.iLocationX, self.iLocationY), self.iRadius) # insert ', 1' at end if you want circle not filled in
+        
+        
+def RedrawGameWindow():
+    # create game window
+    pgWindow.blit(imgBackGround, (0, 0)) 
+    pNerd.draw(pgWindow) 
+    
+    for bullet in lBullets:
+        bullet.draw1(pgWindow) 
+    # pygame.draw.rect(pgWindow, tNavy, (iLocationX, iLocationY, iWidth, iHeight))
+    pygame.display.update()
+
+
+# main loop
+pNerd = player(200, 410, 64, 64)
+lBullets = []
+bRun = True
+while bRun:
+    tcClock.tick(27)   
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            bRun = False
+    
+    for bullet in lBullets:
+        if bullet.iLocationX < 500 and bullet.iLocationX > 0:
+            bullet.iLocationX += bullet.iVelocity
+        else:
+            lBullets.pop(lBullets.index(bullet))       
+            
+    lKeys = pygame.key.get_pressed()    
+    
+    if lKeys[pygame.K_SPACE]:
+        if pNerd.bLeft:
+            iFacing = -1
+        else: 
+            iFacing = 1 
+        if len(lBullets) < 5:
+            p1 = int(round(pNerd.iLocationX+pNerd.iWidth//2))
+            p2 = int(round(pNerd.iLocationY+pNerd.iHeight//2))
+            lBullets.append(projectile(p1, p2, 6, pNerd.tNavy, iFacing))
+    
+    if lKeys[pygame.K_LEFT] and pNerd.iLocationX > pNerd.iVelocity: 
+        pNerd.iLocationX -= pNerd.iVelocity 
+        pNerd.bLeft = True 
+        pNerd.bRight = False 
+        pNerd.bStanding = False
+    elif lKeys[pygame.K_RIGHT] and pNerd.iLocationX < pNerd.iScreenWidth - pNerd.iWidth - pNerd.iVelocity:
+        pNerd.iLocationX += pNerd.iVelocity
+        pNerd.bRight = True
+        pNerd.bLeft = False 
+        pNerd.bStanding = False
+    else:
+        pNerd.bStanding = True
+        pNerd.iWalkCount = 0    
+            
+    if not(pNerd.bIsJumping):
+        # left/right if statements commented out 
+            # if lKeys[pygame.K_UP] and iLocationY > iVelocity:
+                # iLocationY -= iVelocity     
+            # if lKeys[pygame.K_DOWN] and iLocationY < iScreenWidth - iHeight - iVelocity:    
+                # iLocationY += iVelocity
+        if lKeys[pygame.K_UP]:
+            pNerd.bIsJumping = True
+            pNerd.bRight =  False
+            pNerd.bLeft = False
+            pNerd.iWalkCount = 0
+    else:
+        if pNerd.iJumpCount >= -10:
+            iNeg = 1 
+            if pNerd.iJumpCount < 0:
+                iNeg = -1
+            pNerd.iLocationY -= (pNerd.iJumpCount ** 2) * 0.5 * iNeg
+            pNerd.iJumpCount -= 1
+        else:
+            pNerd.bIsJumping = False
+            pNerd.iJumpCount = 10
+    RedrawGameWindow() 
+pygame.quit()
+
