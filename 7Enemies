@@ -1,0 +1,241 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+from pygame5 import iHeight
+Name:         Enemies
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  Character Animation of Enemies
+Link:         https://www.youtube.com/watch?v=vc1pJ8XdZa0&list=PLzMcBGfZo4-lp3jAExUCewBfMx3UZFkh5&index=6
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+import pygame
+
+pygame.init()
+
+pgWindow = pygame.display.set_mode((500, 480))
+
+sTitle = "Projectiles Demo by Erica L. Ingram"
+pygame.display.set_caption(sTitle)
+
+# pygame.image.load(pygame.path.join('R1.png'))
+
+lPWalkRightImages = [pygame.image.load('R1.png'), \
+                    pygame.image.load('R2.png'), \
+                    pygame.image.load('R3.png'), \
+                    pygame.image.load('R4.png'), \
+                    pygame.image.load('R5.png'), \
+                    pygame.image.load('R6.png'), \
+                    pygame.image.load('R7.png'), \
+                    pygame.image.load('R8.png'), \
+                    pygame.image.load('R9.png')]
+
+lPWalkLeftImages = [pygame.image.load('L1.png'), \
+                   pygame.image.load('L2.png'), \
+                   pygame.image.load('L3.png'), \
+                   pygame.image.load('L4.png'), \
+                   pygame.image.load('L5.png'), \
+                   pygame.image.load('L6.png'), \
+                   pygame.image.load('L7.png'), \
+                   pygame.image.load('L8.png'), \
+                   pygame.image.load('L9.png')]
+
+imgBackGround = pygame.image.load('bg.jpg')
+
+imgCharStanding = pygame.image.load('standing.png') 
+
+
+tcClock = pygame.time.Clock()
+
+class player(object):
+    def __init__(self, iLocationX, iLocationY, iWidth, iHeight):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iWidth = iWidth
+        self.iHeight = iHeight
+        self.iVelocity = 5
+        self.tNavy  = (  0,  34,  68)
+        self.tGreen = (105, 190,  40)
+        self.tGray =  (162, 172, 175)
+        self.iScreenWidth = 500
+        self.bIsJumping = False
+        self.iJumpCount = 10
+        self.bLeft = False 
+        self.bRight = False
+        self.iWalkCount = 0 
+        self.bStanding = True 
+        # lRectDimensions = (iLocationX, iLocationY, iWidth, iHeight)
+        
+    def draw(self, pgWindow):
+        if self.iWalkCount +1 >= 27:
+            self.iWalkCount = 0
+        if not(self.bStanding):
+            if self.bLeft:
+                pgWindow.blit(lPWalkLeftImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+            elif self.bRight:
+                pgWindow.blit(lPWalkRightImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+                self.iWalkCount += 1
+        else:
+            if self.bRight:
+                pgWindow.blit(lPWalkRightImages[0], (self.iLocationX, self.iLocationY))
+            else:
+                pgWindow.blit(lPWalkLeftImages[0], (self.iLocationX, self.iLocationY))
+                    
+                # pgWindow.blit(imgCharStanding, (self.iLocationX, self.iLocationY))    
+
+
+class projectile(object):
+    def __init__(self, iLocationX, iLocationY, iRadius, sColor, iFacing):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iRadius = iRadius
+        self.sColor = sColor
+        self.iFacing = iFacing
+        self.iVelocity = 8 * iFacing
+        
+    def draw1(self, pgWindow):
+        pygame.draw.circle(pgWindow, self.sColor, (self.iLocationX, self.iLocationY), self.iRadius) # insert ', 1' at end if you want circle not filled in
+        
+        
+class enemy(object):
+    lEWalkRightImages = [pygame.image.load('R1E.png'), \
+                 pygame.image.load('R2E.png'), \
+                 pygame.image.load('R3E.png'), \
+                 pygame.image.load('R4E.png'), \
+                 pygame.image.load('R5E.png'), \
+                 pygame.image.load('R6E.png'), \
+                 pygame.image.load('R7E.png'), \
+                 pygame.image.load('R8E.png'), \
+                 pygame.image.load('R9E.png'), \
+                 pygame.image.load('R10E.png'), \
+                 pygame.image.load('R11E.png')]
+
+    lEWalkLeftImages = [pygame.image.load('L1E.png'), \
+             pygame.image.load('L2E.png'), \
+             pygame.image.load('L3E.png'), \
+             pygame.image.load('L4E.png'), \
+             pygame.image.load('L5E.png'), \
+             pygame.image.load('L6E.png'), \
+             pygame.image.load('L7E.png'), \
+             pygame.image.load('L8E.png'), \
+             pygame.image.load('L9E.png'), \
+             pygame.image.load('L10E.png'), \
+             pygame.image.load('L11E.png')]
+                     
+    def __init__(self, iLocationX, iLocationY, iWidth, iHeight, iEnd):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iWidth = iWidth
+        self.iHeight = iHeight
+        self.iEnd = iEnd
+        self.iWalkCount = 0
+        self.iVelocity = 3
+        self.lEnemyPath = [iLocationX, iEnd]
+    
+    def draw(self, pgWindow):
+        self.move()
+        if self.iWalkCount + 1 >= 33: # 3 frames per image. 3 x 11 pics = 33.
+            self.iWalkCount = 0        
+        if self.iVelocity > 0:
+            pgWindow.blit(self.lEWalkRightImages[self.iWalkCount//3], (self.iLocationX,self.iLocationY))
+            self.iWalkCount += 1
+        else:
+            pgWindow.blit(self.lEWalkLeftImages[self.iWalkCount//3], (self.iLocationX,self.iLocationY))
+            self.iWalkCount += 1
+    
+    def move(self):
+        if self.iVelocity > 0:  # If we are moving right
+            if self.iLocationX < self.lEnemyPath[1] + self.iVelocity: # If we have not reached the furthest right point on our path.
+                self.iLocationX += self.iVelocity
+            else: # Change direction and move back the other way
+                self.iVelocity *= -1
+                self.iLocationX += self.iVelocity
+                self.iWalkCount = 0
+        else: # If we are moving left
+            if self.iLocationX > self.lEnemyPath[0] - self.iVelocity: # If we have not reached the furthest left point on our path
+                self.iLocationX += self.iVelocity
+            else:  # Change direction
+                self.iVelocity *= -1
+                self.iLocationX += self.iVelocity
+                self.iWalkCount = 0
+        
+        
+def RedrawGameWindow():
+    # create game window
+    pgWindow.blit(imgBackGround, (0, 0)) 
+    pNerd.draw(pgWindow) 
+    pGoblinEnemy.draw(pgWindow)
+    for bullet in lBullets:
+        bullet.draw1(pgWindow) 
+    # pygame.draw.rect(pgWindow, tNavy, (iLocationX, iLocationY, iWidth, iHeight))
+    pygame.display.update()
+
+
+# main loop
+pNerd = player(200, 410, 64, 64)
+pGoblinEnemy = enemy(100, 410, 64, 64, 300)
+lBullets = []
+bRun = True
+while bRun:
+    tcClock.tick(27)   
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            bRun = False
+    
+    for bullet in lBullets:
+        if bullet.iLocationX < 500 and bullet.iLocationX > 0:
+            bullet.iLocationX += bullet.iVelocity
+        else:
+            lBullets.pop(lBullets.index(bullet))       
+            
+    lKeys = pygame.key.get_pressed()    
+    
+    if lKeys[pygame.K_SPACE]:
+        if pNerd.bLeft:
+            iFacing = -1
+        else: 
+            iFacing = 1 
+        if len(lBullets) < 5:
+            p1 = int(round(pNerd.iLocationX+pNerd.iWidth//2))
+            p2 = int(round(pNerd.iLocationY+pNerd.iHeight//2))
+            lBullets.append(projectile(p1, p2, 6, pNerd.tNavy, iFacing))
+    
+    iOutsideBoundary = pNerd.iScreenWidth - pNerd.iWidth - pNerd.iVelocity
+    
+    if lKeys[pygame.K_LEFT] and pNerd.iLocationX > pNerd.iVelocity: 
+        pNerd.iLocationX -= pNerd.iVelocity 
+        pNerd.bLeft = True 
+        pNerd.bRight = False 
+        pNerd.bStanding = False
+    elif lKeys[pygame.K_RIGHT] and pNerd.iLocationX < pNerd.iScreenWidth - pNerd.iWidth - pNerd.iVelocity:
+        pNerd.iLocationX += pNerd.iVelocity
+        pNerd.bRight = True
+        pNerd.bLeft = False 
+        pNerd.bStanding = False
+    else:
+        pNerd.bStanding = True
+        pNerd.iWalkCount = 0    
+            
+    if not(pNerd.bIsJumping):
+        # left/right if statements commented out 
+            # if lKeys[pygame.K_UP] and iLocationY > iVelocity:
+                # iLocationY -= iVelocity     
+            # if lKeys[pygame.K_DOWN] and iLocationY < iScreenWidth - iHeight - iVelocity:    
+                # iLocationY += iVelocity
+                
+        if lKeys[pygame.K_UP]:
+            pNerd.bIsJumping = True
+            pNerd.bRight =  False
+            pNerd.bLeft = False
+            pNerd.iWalkCount = 0
+    else:
+        if pNerd.iJumpCount >= -10:
+            iNeg = 1 
+            if pNerd.iJumpCount < 0:
+                iNeg = -1
+            pNerd.iLocationY -= (pNerd.iJumpCount ** 2) * 0.5 * iNeg
+            pNerd.iJumpCount -= 1
+        else:
+            pNerd.bIsJumping = False
+            pNerd.iJumpCount = 10
+    RedrawGameWindow() 
+pygame.quit()
+
