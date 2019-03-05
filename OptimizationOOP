@@ -1,0 +1,128 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+Name:         OptimizationOOP
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  Optimization & OOP
+Link:         https://www.youtube.com/watch?v=xfnRywBv5VM&list=PLzMcBGfZo4-lp3jAExUCewBfMx3UZFkh5&index=4
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+import pygame
+
+pygame.init()
+
+pgWindow = pygame.display.set_mode((500, 480))
+
+sTitle = "Fourth Game by Erica L. Ingram"
+pygame.display.set_caption(sTitle)
+
+# pygame.image.load(pygame.path.join('R1.png'))
+
+lWalkRightImages = [pygame.image.load('R1.png'), \
+                    pygame.image.load('R2.png'), \
+                    pygame.image.load('R3.png'), \
+                    pygame.image.load('R4.png'), \
+                    pygame.image.load('R5.png'), \
+                    pygame.image.load('R6.png'), \
+                    pygame.image.load('R7.png'), \
+                    pygame.image.load('R8.png'), \
+                    pygame.image.load('R9.png')]
+
+lWalkLeftImages = [pygame.image.load('L1.png'), \
+                   pygame.image.load('L2.png'), \
+                   pygame.image.load('L3.png'), \
+                   pygame.image.load('L4.png'), \
+                   pygame.image.load('L5.png'), \
+                   pygame.image.load('L6.png'), \
+                   pygame.image.load('L7.png'), \
+                   pygame.image.load('L8.png'), \
+                   pygame.image.load('L9.png')]
+
+imgBackGround = pygame.image.load('bg.jpg')
+
+imgCharStanding = pygame.image.load('standing.png') 
+
+
+tcClock = pygame.time.Clock()
+
+class player(object):
+    def __init__(self, iLocationX, iLocationY, iWidth, iHeight):
+        self.iLocationX = iLocationX
+        self.iLocationY = iLocationY
+        self.iWidth = iWidth
+        self.iHeight = iHeight
+        self.iVelocity = 5
+        self.tNavy  = (  0,  34,  68)
+        self.tGreen = (105, 190,  40)
+        self.tGray =  (162, 172, 175)
+        self.iScreenWidth = 500
+        self.bIsJumping = False
+        self.iJumpCount = 10
+        self.bLeft = False 
+        self.bRight = False
+        self.iWalkCount = 0 
+        # lRectDimensions = (iLocationX, iLocationY, iWidth, iHeight)
+        
+    def draw(self, pgWindow):
+        if self.iWalkCount +1 >= 27:
+            self.iWalkCount = 0
+        if self.bLeft:
+            pgWindow.blit(lWalkLeftImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+        elif self.bRight:
+            pgWindow.blit(lWalkRightImages[self.iWalkCount//3], (self.iLocationX, self.iLocationY))
+            self.iWalkCount += 1
+        else:
+            pgWindow.blit(imgCharStanding, (self.iLocationX, self.iLocationY))    
+
+def RedrawGameWindow():
+    # create game window
+    pgWindow.blit(imgBackGround, (0, 0)) 
+    pNerd.draw(pgWindow) 
+    # pygame.draw.rect(pgWindow, tNavy, (iLocationX, iLocationY, iWidth, iHeight))
+    pygame.display.update()
+
+
+# main loop
+pNerd = player(300, 410, 64, 64)
+bRun = True
+while bRun:
+    tcClock.tick(27)   
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            bRun = False            
+    lKeys = pygame.key.get_pressed()    
+    if lKeys[pygame.K_LEFT] and pNerd.iLocationX > pNerd.iVelocity: 
+        pNerd.iLocationX -= pNerd.iVelocity 
+        pNerd.bLeft = True 
+        pNerd.bRight = False 
+    elif lKeys[pygame.K_RIGHT] and pNerd.iLocationX < pNerd.iScreenWidth - pNerd.iWidth - pNerd.iVelocity:
+        pNerd.iLocationX += pNerd.iVelocity
+        pNerd.bRight = True
+        pNerd.bLeft = False 
+    else:
+        pNerd.bRight = False
+        pNerd.bLeft = False 
+        pNerd.iWalkCount = 0        
+    if not(pNerd.bIsJumping):
+        # left/right if statements commented out 
+        # if lKeys[pygame.K_UP] and iLocationY > iVelocity:
+            # iLocationY -= iVelocity     
+        # if lKeys[pygame.K_DOWN] and iLocationY < iScreenWidth - iHeight - iVelocity:    
+            # iLocationY += iVelocity
+        if lKeys[pygame.K_SPACE]:
+            pNerd.bIsJumping = True
+            pNerd.bRight =  False
+            pNerd.bLeft = False
+            pNerd.iWalkCount = 0
+    else:
+        if pNerd.iJumpCount >= -10:
+            iNeg = 1 
+            if pNerd.iJumpCount < 0:
+                iNeg = -1
+            pNerd.iLocationY -= (pNerd.iJumpCount ** 2) * 0.5 * iNeg
+            pNerd.iJumpCount -= 1
+        else:
+            pNerd.bIsJumping = False
+            pNerd.iJumpCount = 10
+    RedrawGameWindow() 
+pygame.quit()
+
