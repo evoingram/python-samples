@@ -1,4 +1,5 @@
 '''''''''''''''''''''''''''''''''''''''''''''''''''
+Name:         EmailAddressParser
 @author:      Erica L. Ingram
 Company:      A Quo Co.
 Description:  parses e-mail addresses.
