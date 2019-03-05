@@ -1,0 +1,138 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+Name:         CharacterAnimationSprites
+@author:      Erica L. Ingram
+Company:      A Quo Co.
+Description:  Character Animation & Sprites
+Link:         https://www.youtube.com/watch?v=UdsNBIzsmlI&list=PLzMcBGfZo4-lp3jAExUCewBfMx3UZFkh5&index=3
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+import pygame
+
+pygame.init()
+
+pgWindow = pygame.display.set_mode((500, 480))
+
+sTitle = "First Game by Erica L. Ingram"
+pygame.display.set_caption(sTitle)
+
+iLocationX = 50 
+iLocationY = 400
+
+iWidth = 64
+iHeight = 64 
+
+iVelocity = 5
+
+tNavy  = (  0,  34,  68)
+tGreen = (105, 190,  40)
+tGray  = (162, 172, 175)
+
+iScreenWidth = 500
+
+bIsJumping = False
+iJumpCount = 10
+bLeft = False
+bRight = False 
+iWalkCount = 0 
+
+# lRectDimensions = (iLocationX, iLocationY, iWidth, iHeight)
+# pygame.image.load(pygame.path.join('R1.png'))
+
+lWalkRightImages = [pygame.image.load('R1.png'), \
+                    pygame.image.load('R2.png'), \
+                    pygame.image.load('R3.png'), \
+                    pygame.image.load('R4.png'), \
+                    pygame.image.load('R5.png'), \
+                    pygame.image.load('R6.png'), \
+                    pygame.image.load('R7.png'), \
+                    pygame.image.load('R8.png'), \
+                    pygame.image.load('R9.png')]
+lWalkLeftImages = [pygame.image.load('L1.png'), \
+                   pygame.image.load('L2.png'), \
+                   pygame.image.load('L3.png'), \
+                   pygame.image.load('L4.png'), \
+                   pygame.image.load('L5.png'), \
+                   pygame.image.load('L6.png'), \
+                   pygame.image.load('L7.png'), \
+                   pygame.image.load('L8.png'), \
+                   pygame.image.load('L9.png')]
+
+imgBackGround = pygame.image.load('bg.jpg')
+
+imgCharStanding = pygame.image.load('standing.png') 
+
+
+tcClock = pygame.time.Clock()
+
+def RedrawGameWindow():
+    global iWalkCount    
+    pgWindow.blit(imgBackGround, (0, 0)) 
+    if iWalkCount +1 >= 27:
+        iWalkCount = 0
+    if bLeft:
+        pgWindow.blit(lWalkLeftImages[iWalkCount//3], (iLocationX, iLocationY))
+    elif bRight:
+        pgWindow.blit(lWalkRightImages[iWalkCount//3], (iLocationX, iLocationY))
+        iWalkCount += 1
+    else:
+        pgWindow.blit(imgCharStanding, (iLocationX, iLocationY))    
+    # pygame.draw.rect(pgWindow, tNavy, (iLocationX, iLocationY, iWidth, iHeight))
+    pygame.display.update()
+
+# main loop
+bRun = True
+while bRun:
+    tcClock.tick(27)
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            bRun = False
+            
+    lKeys = pygame.key.get_pressed()
+    
+    if lKeys[pygame.K_LEFT] and iLocationX > iVelocity: 
+        iLocationX -= iVelocity 
+        bLeft = True 
+        bRight = False 
+    elif lKeys[pygame.K_RIGHT] and iLocationX < iScreenWidth - iWidth - iVelocity:
+        iLocationX += iVelocity
+        bRight = True
+        bLeft = False 
+    else:
+        bRight = False
+        bLeft = False 
+        iWalkCount = 0
+        
+    if not(bIsJumping):
+        # if lKeys[pygame.K_UP] and iLocationY > iVelocity:
+            # iLocationY -= iVelocity     
+        # if lKeys[pygame.K_DOWN] and iLocationY < iScreenWidth - iHeight - iVelocity:    
+            # iLocationY += iVelocity
+        if lKeys[pygame.K_SPACE]:
+            bIsJumping = True
+            bRight =  False
+            bLeft = False
+            iWalkCount = 0
+    else:
+        if iJumpCount >= -10:
+            iNeg = 1 
+            if iJumpCount < 0:
+                iNeg = -1
+            iLocationY -= (iJumpCount ** 2) * 0.5 * iNeg
+            iJumpCount -= 1
+        else:
+            bIsJumping = False
+            iJumpCount = 10
+            
+           
+    RedrawGameWindow()
+            
+pygame.quit()
+
+
+
+
+if __name__ == '__main__':
+    pass
+
+
