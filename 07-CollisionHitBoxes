@@ -12,7 +12,7 @@ pygame.init()
 
 pgWindow = pygame.display.set_mode((500, 480))
 
-sTitle = "Collsions Hit Boxes Demo by Erica L. Ingram"
+sTitle = "Collisions Hit Boxes Demo by Erica L. Ingram"
 pygame.display.set_caption(sTitle)
 
 # pygame.image.load(pygame.path.join('R1.png'))
